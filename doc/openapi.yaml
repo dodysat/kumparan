@@ -17,7 +17,32 @@ tags:
     description: "CRUD Article"
 
 paths:
-  /article:
+  /:
+    get:
+      summary: "API Status"
+      description: "Get current API Status"
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+              examples:
+                success:
+                  value:
+                    status: true
+                    message: "API Ready to use"
+                    data: {}
+
+  /articles:
     post:
       tags:
         - Article
