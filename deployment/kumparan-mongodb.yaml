@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kumparan-storage-mongodb
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: kumparan-storage-mongodb
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    type: DirectoryOrCreate
+    path: "/home/apps/kumparan/storage-mongodb"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-kumparan-storage-mongodb
+  namespace: kumparan
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: kumparan-storage-mongodb
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-mongodb
+  namespace: kumparan
+spec:
+  selector:
+    app: mongodb
+  type: ClusterIP
+  sessionAffinity: ClientIP
+  ports:
+    - name: p-kumparan
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: kumparan
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:5.0-focal
+          imagePullPolicy: Always
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: root
+          volumeMounts:
+            - mountPath: /data/db
+              name: claim-kumparan-storage-mongodb
+      volumes:
+        - name: claim-kumparan-storage-mongodb
+          persistentVolumeClaim:
+            claimName: claim-kumparan-storage-mongodb
