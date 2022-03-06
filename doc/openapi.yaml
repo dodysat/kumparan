@@ -8,10 +8,10 @@ info:
   license:
     name: MIT
 servers:
-  - url: "http://localhost:3000"
-    description: Development Server
   - url: "https://kumparan-api.onhost.my.id"
     description: Production Server
+  - url: "http://localhost:3000"
+    description: Development Server
 tags:
   - name: "Article"
     description: "CRUD Article"
