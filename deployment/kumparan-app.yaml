@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
         - name: kumparan
-          image: gcr.io/utils-id/kumparan:v0.0.1
+          image: gcr.io/utils-id/kumparan:v1.0.0
           imagePullPolicy: Always
           env:
             - name: URL_MONGO
