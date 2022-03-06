@@ -1,0 +1,80 @@
+version: "3.5"
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - app
+    environment:
+      - URL_MONGO=mongodb://root:root@mongodb:27017/kumparan?authSource=admin
+      - URL_REDIS=redis://redis:6379
+      - URL_ELASTICSEARCH=http://elasticsearch:9200
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:5.0-focal
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    volumes:
+      - kumparan_mongodb:/data/db
+    networks:
+      - app
+
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.0.0
+    restart: always
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"  
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+    volumes:
+      - kumparan_elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - app
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v4.6.0
+    container_name: swagger_ui_container
+    ports:
+      - "8899:8080"
+    volumes:
+      - ./doc:/usr/share/nginx/html/doc
+    environment:
+      API_URL: doc/openapi.yaml
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  kumparan_mongodb:
+    driver: local
+  kumparan_elasticsearch:
+    driver: local

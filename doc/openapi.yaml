@@ -1,0 +1,205 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  description: "Article Documentation"
+  title: Article
+  contact:
+    email: dody.satria13@gmail.com
+  license:
+    name: MIT
+servers:
+  - url: "http://localhost:3000"
+    description: Development Server
+  - url: "https://kumparan-api.onhost.my.id"
+    description: Production Server
+tags:
+  - name: "Article"
+    description: "CRUD Article"
+
+paths:
+  /article:
+    post:
+      tags:
+        - Article
+      summary: "Add Article"
+      description: "This endpoint for add article"
+      operationId: "requestAddArticle"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                author:
+                  type: string
+                title:
+                  type: string
+                body:
+                  type: string
+              required:
+                - author
+                - title
+                - body
+            examples:
+              Success:
+                value:
+                  author: Dody Satria
+                  title: Cara Membuat Pempek Lenjer Khas Palembang Agar Tidak Keras
+                  body: Pempek khas Palembang banyak jenisnya, salah satunya adalah pempek lenjer. Jenis pempek ini dibuat cukup simpel karena tidak ada isian di dalam adonan. Meski simpel perlu diketahui resep atau cara membuat  pempek ini agar tidak keras.
+              Failed:
+                value:
+                  author: Dody Satria
+                  title:
+                  body: Untuk membuat pempek, secara umum hampir sama. Pertama-tama masukan ikan giling yang sudah beku ke dalam wadah dan masukan air, gula, garam, bawang putih yang sudah halus, serta penyedap rasa.
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      author:
+                        type: string
+                      title:
+                        type: string
+                      body:
+                        type: string
+                      created:
+                        type: string
+                    required:
+                      - id
+                      - author
+                      - title
+                      - body
+                      - created
+                example:
+                  status: true
+                  data:
+                    id: "6224d08583ed61fdda69db6a"
+                    author: Dody Satria
+                    title: Cara Membuat Pempek Lenjer Khas Palembang Agar Tidak Keras
+                    body: Pempek khas Palembang banyak jenisnya, salah satunya adalah pempek lenjer. Jenis pempek ini dibuat cukup simpel karena tidak ada isian di dalam adonan. Meski simpel perlu diketahui resep atau cara membuat  pempek ini agar tidak keras.
+                    created: "2022-03-06T15:17:25.133Z"
+        422:
+          description: "Failed"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                    properties:
+                      author:
+                        type: string
+                      title:
+                        type: string
+                      body:
+                        type: string
+                  data:
+                    type: object
+              example:
+                status: false
+                message: "Periksa kembali inputan anda"
+                errors:
+                  title:
+                    - "Harus diisi"
+    get:
+      tags:
+        - Article
+      summary: "Get Article"
+      description: "This endpoint for get article"
+      operationId: "requestGetArticle"
+      parameters:
+        - name: "query"
+          in: "query"
+          description: "Search keyword"
+          required: false
+          schema:
+            type: string
+            example: "pempek"
+        - name: author
+          in: "query"
+          description: "Search by author"
+          required: false
+          schema:
+            type: string
+            example: "Dody"
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        author:
+                          type: string
+                        title:
+                          type: string
+                        body:
+                          type: string
+                        created:
+                          type: string
+                    required:
+                      - id
+                      - author
+                      - title
+                      - body
+                      - created
+                example:
+                  status: true
+                  data:
+                    - id: "6224d08583ed61fdda69db6a"
+                      author: Dody Satria
+                      title: Cara Membuat Pempek Lenjer Khas Palembang Agar Tidak Keras
+                      body: Pempek khas Palembang banyak jenisnya, salah satunya adalah pempek lenjer. Jenis pempek ini dibuat cukup simpel karena tidak ada isian di dalam adonan. Meski simpel perlu diketahui resep atau cara membuat  pempek ini agar tidak keras.
+                      created: "2022-03-06T15:17:25.133Z"
+        404:
+          description: "Failed"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  message:
+                    type: string
+                  errors:
+                    type: object
+                  data:
+                    type: object
+              example:
+                status: false
+                message: "Data tidak ditemukan"
+                errors: {}
